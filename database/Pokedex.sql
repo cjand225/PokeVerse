@@ -62,13 +62,15 @@ CREATE TABLE Pokedex.GenderRatio (
 );
 
 -- Create the insertion pokemon function
-CREATE OR REPLACE FUNCTION insertPokemon(
+CREATE OR REPLACE FUNCTION insertBaseData(
     pId INT,
-    pType Pokedex.poketype[],
+    pType text[],
     pHeight INT,
     pWeight INT,
     pGeneration INT
 ) RETURNS VOID AS $$
+DECLARE
+    pPokeType Pokedex.PokeType[];
 BEGIN
     -- Perform Validation Checks
     IF pId IS NULL THEN
@@ -87,12 +89,15 @@ BEGIN
         RAISE EXCEPTION 'The weight cannot be less than zero.';
     END IF;
 
-    IF pGeneration IS NOT NULL AND pGeneration < 1 OR pGeneration > 8 THEN
-        RAISE EXCEPTION 'The generation cannot exceed the bounds between one and eight.';
+    IF pGeneration < 1 OR pGeneration > 8 THEN
+        RAISE EXCEPTION 'The generation must be between one and eight.';
     END IF;
 
+    -- Convert text[] to Pokedex.PokeType[]
+    SELECT ARRAY(SELECT p::Pokedex.PokeType FROM UNNEST(pType) p) INTO pPokeType;
 
+    -- Insert into the Pokemon table
     INSERT INTO Pokedex.Pokemon (id, type, height, weight, generation)
-    VALUES (pId, pType, pHeight, pWeight, pGeneration);
+    VALUES (pId, pPokeType, pHeight, pWeight, pGeneration);
 END;
 $$ LANGUAGE plpgsql;
