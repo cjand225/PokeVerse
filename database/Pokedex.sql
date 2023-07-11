@@ -36,6 +36,7 @@ CREATE TABLE Pokedex.Pokemon (
 CREATE TABLE Pokedex.Names (
     id INT,
     lang VARCHAR(2),
+    name TEXT, 
     PRIMARY KEY (id, lang),
     FOREIGN KEY (id) REFERENCES Pokedex.Pokemon (id)
 );
@@ -99,5 +100,28 @@ BEGIN
     -- Insert into the Pokemon table
     INSERT INTO Pokedex.Pokemon (id, type, height, weight, generation)
     VALUES (pId, pPokeType, pHeight, pWeight, pGeneration);
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create the insertion name function
+CREATE OR REPLACE FUNCTION insertNameData(
+    pId INT,
+    pLang VARCHAR(2),
+    pName TEXT
+) RETURNS VOID AS $$
+BEGIN
+    -- Check for NULL values
+    IF pName IS NULL THEN
+        RAISE EXCEPTION 'The name cannot be null.';
+    END IF;
+
+    -- Check if the ID exists in Pokemon table
+    IF NOT EXISTS (SELECT 1 FROM Pokedex.Pokemon WHERE id = pId) THEN
+        RAISE EXCEPTION 'The provided ID does not exist in the Pokemon table.';
+    END IF;
+
+    -- Insert into the Names table
+    INSERT INTO Pokedex.Names (id, lang, name)
+    VALUES (pId, pLang, pName);
 END;
 $$ LANGUAGE plpgsql;
