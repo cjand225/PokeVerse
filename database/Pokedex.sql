@@ -2,16 +2,40 @@
 
 CREATE SCHEMA Pokedex;
 
+-- Create the 1-1 Generic Types to Enum pokeType
+CREATE TYPE Pokedex.pokeType AS ENUM (
+     'Normal',
+     'Fire',
+     'Water',
+     'Electric',
+     'Grass',
+     'Ice',
+     'Fighting',
+     'Poison',
+     'Ground',
+     'Flying',
+     'Psychic',
+     'Bug',
+     'Rock',
+     'Ghost',
+     'Dragon',
+     'Dark',
+     'Steel',
+     'Fairy'
+ );
+
 -- Create the Types table
 CREATE TABLE Pokedex.Types (
-    id INT PRIMARY KEY,
+    id INT,
     lang VARCHAR(2) NOT NULL,
-    description TEXT NOT NULL
+    description TEXT NOT NULL,
+    PRIMARY KEY (id, lang)
 );
 
 -- Create the Pokemon table
 CREATE TABLE Pokedex.Pokemon (
     id INT PRIMARY KEY,
+    type Pokedex.pokeType[] DEFAULT NULL,
     height INT DEFAULT NULL, -- cm
     weight INT DEFAULT NULL, -- g
     generation INT DEFAULT NULL
@@ -38,13 +62,34 @@ CREATE TABLE Pokedex.BaseStats (
     FOREIGN KEY (id) REFERENCES Pokedex.Pokemon (id)
 );
 
+-- Create the insertion base type function
+CREATE OR REPLACE FUNCTION insertType(
+  pId INT,
+  pLang VARCHAR(2),
+  pDescription TEXT
+) RETURNS VOID AS $$
+BEGIN
+  -- Check if the record already exists in the table
+  IF EXISTS (SELECT 1 FROM Pokedex.Types WHERE id = pId AND lang = pLang) THEN
+    RAISE EXCEPTION 'Type with ID % and Lang % already exists.', pId, pLang;
+  END IF;
+
+  -- Insert the new type into the table
+  INSERT INTO Pokedex.Types (id, lang, description)
+  VALUES (pId, pLang, pDescription);
+END;
+$$ LANGUAGE plpgsql;
+
 -- Create the insertion pokemon function
 CREATE OR REPLACE FUNCTION insertBaseEntry(
     pId INT,
+    pType text[],
     pHeight INT,
     pWeight INT,
     pGeneration INT
 ) RETURNS VOID AS $$
+DECLARE
+     pPokeType Pokedex.PokeType[];
 BEGIN
     -- Perform Validation Checks
     IF pId IS NULL THEN
@@ -67,9 +112,12 @@ BEGIN
         RAISE EXCEPTION 'The generation must be between one and eight.';
     END IF;
 
+    -- Convert text[] to Pokedex.PokeType[]
+    SELECT ARRAY(SELECT p::Pokedex.PokeType FROM UNNEST(pType) p) INTO pPokeType;
+
     -- Insert into the Pokemon table
-    INSERT INTO Pokedex.Pokemon (id, height, weight, generation)
-    VALUES (pId, pHeight, pWeight, pGeneration);
+    INSERT INTO Pokedex.Pokemon (id, type, height, weight, generation)
+    VALUES (pId, pPokeType, pHeight, pWeight, pGeneration);
 END;
 $$ LANGUAGE plpgsql;
 

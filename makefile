@@ -8,6 +8,7 @@ create_db:
 	psql $(DB_NAME) < $(CURDIR)/data/baseData.sql
 	psql $(DB_NAME) < $(CURDIR)/data/nameData.sql
 	psql $(DB_NAME) < $(CURDIR)/data/baseStatData.sql
+	psql $(DB_NAME) < $(CURDIR)/data/typeData.sql
 
 drop_db:
 	dropdb $(DB_NAME)
