@@ -193,3 +193,20 @@ BEGIN
     VALUES (pId, pHp, pAttack, pDefense, pSpecialAttack, pSpecialDefense, pSpeed);
 END;
 $$ LANGUAGE plpgsql;
+
+-- Retrieves the translated name of a Pokémon based on the provided Pokémon ID and language code.
+CREATE OR REPLACE FUNCTION getTranslatedName(
+    pId INT, 
+    pLang VARCHAR(2)
+) RETURNS TEXT AS $$
+DECLARE
+  translatedName TEXT;
+BEGIN
+    SELECT name INTO translatedName
+    FROM Pokedex.Names
+    WHERE id = pId AND lang = pLang
+    LIMIT 1;
+    RETURN translatedName;
+END;
+$$ LANGUAGE plpgsql;
+ 
