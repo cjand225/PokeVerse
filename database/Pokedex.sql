@@ -4,25 +4,25 @@ CREATE SCHEMA Pokedex;
 
 -- Create the 1-1 Generic Types to Enum pokeType
 CREATE TYPE Pokedex.pokeType AS ENUM (
-     'Normal',
-     'Fire',
-     'Water',
-     'Electric',
-     'Grass',
-     'Ice',
-     'Fighting',
-     'Poison',
-     'Ground',
-     'Flying',
-     'Psychic',
-     'Bug',
-     'Rock',
-     'Ghost',
-     'Dragon',
-     'Dark',
-     'Steel',
-     'Fairy'
- );
+    'Normal',
+    'Fighting',
+    'Flying',
+    'Poison',
+    'Ground',
+    'Rock',
+    'Bug',
+    'Ghost',
+    'Steel',
+    'Fire',
+    'Water',
+    'Grass',
+    'Electric',
+    'Psychic',
+    'Ice',
+    'Dragon',
+    'Dark',
+    'Fairy'
+);
 
 -- Create the Types table
 CREATE TABLE Pokedex.Types (
@@ -62,7 +62,7 @@ CREATE TABLE Pokedex.BaseStats (
     FOREIGN KEY (id) REFERENCES Pokedex.Pokemon (id)
 );
 
--- Create the insertion base type function
+-- Create the insertType function
 CREATE OR REPLACE FUNCTION insertType(
   pId INT,
   pLang VARCHAR(2),
@@ -71,7 +71,7 @@ CREATE OR REPLACE FUNCTION insertType(
 BEGIN
   -- Check if the record already exists in the table
   IF EXISTS (SELECT 1 FROM Pokedex.Types WHERE id = pId AND lang = pLang) THEN
-    RAISE EXCEPTION 'Type with ID % and Lang % already exists.', pId, pLang;
+    RAISE EXCEPTION 'Type with ID % and Lang % already exists.', pokeType, pLang;
   END IF;
 
   -- Insert the new type into the table
@@ -79,6 +79,7 @@ BEGIN
   VALUES (pId, pLang, pDescription);
 END;
 $$ LANGUAGE plpgsql;
+
 
 -- Create the insertion pokemon function
 CREATE OR REPLACE FUNCTION insertBaseEntry(
@@ -194,6 +195,20 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Retrieves the index of the PokeType Enum provided.
+CREATE OR REPLACE FUNCTION Pokedex.getPokeTypeIndex(
+    pokeTypeValue Pokedex.pokeType
+) RETURNS INTEGER AS $$
+DECLARE
+  position INTEGER;
+BEGIN
+  position := (
+    SELECT array_position(enum_range(null::Pokedex.pokeType), pokeTypeValue)
+  );
+  RETURN position;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Retrieves the translated name of a Pokémon based on the provided Pokémon ID and language code.
 CREATE OR REPLACE FUNCTION getTranslatedName(
     pId INT, 
@@ -210,3 +225,35 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
  
+-- Retrieves the translated types of a Pokémon based on the provided Pokémon ID and language code.
+CREATE OR REPLACE FUNCTION getTranslatedTypes(
+    pId INT, 
+    pLang VARCHAR(2)
+) RETURNS TEXT[]
+AS $$
+DECLARE
+    typeArray Pokedex.PokeType[];
+    intArray INTEGER[];
+    i INT;
+    descriptionArray TEXT[];
+BEGIN
+    -- Retrieve the type array for the specified Pokemon ID
+    SELECT type INTO typeArray
+    FROM Pokedex.Pokemon
+    WHERE id = pId;
+
+    -- Convert the type array to an array of integers using the getPokeTypeIndex function
+    FOR i IN 1..array_length(typeArray, 1)
+    LOOP
+        intArray[i] := Pokedex.getPokeTypeIndex(typeArray[i]);
+    END LOOP;
+
+    -- Retrieve the translated type descriptions for the specified language and converted type array
+    SELECT array_agg(t.description) INTO descriptionArray
+    FROM Pokedex.Types t
+    WHERE t.id = ANY(intArray) AND t.lang = pLang;
+
+    -- Return the array of translated type descriptions
+    RETURN descriptionArray;
+END;
+$$ LANGUAGE plpgsql;
