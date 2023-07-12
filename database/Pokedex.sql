@@ -125,3 +125,53 @@ BEGIN
     VALUES (pId, pLang, pName);
 END;
 $$ LANGUAGE plpgsql;
+
+-- Create the insertion base stats function
+CREATE OR REPLACE FUNCTION insertBaseStats(
+    pId INT,
+    pHp INT,
+    pAttack INT,
+    pDefense INT,
+    pSpecialAttack INT,
+    pSpecialDefense INT,
+    pSpeed INT
+) RETURNS VOID AS $$
+BEGIN
+    -- Perform validation checks
+    IF pId IS NULL THEN
+        RAISE EXCEPTION 'The ID cannot be null.';
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM Pokedex.Pokemon WHERE id = pId) THEN
+        RAISE EXCEPTION 'The ID does not exist in the Pokemon table.';
+    END IF;
+
+    IF pHp < 1 OR pHp > 255 THEN
+        RAISE EXCEPTION 'The HP value must be between 1 and 255 (inclusive).';
+    END IF;
+
+    IF pAttack < 1 OR pAttack > 255 THEN
+        RAISE EXCEPTION 'The Attack value must be between 1 and 255 (inclusive).';
+    END IF;
+
+    IF pDefense < 1 OR pDefense > 255 THEN
+        RAISE EXCEPTION 'The Defense value must be between 1 and 255 (inclusive).';
+    END IF;
+
+    IF pSpecialAttack < 1 OR pSpecialAttack > 255 THEN
+        RAISE EXCEPTION 'The Special Attack value must be between 1 and 255 (inclusive).';
+    END IF;
+
+    IF pSpecialDefense < 1 OR pSpecialDefense > 255 THEN
+        RAISE EXCEPTION 'The Special Defense value must be between 1 and 255 (inclusive).';
+    END IF;
+
+    IF pSpeed < 1 OR pSpeed > 255 THEN
+        RAISE EXCEPTION 'The Speed value must be between 1 and 255 (inclusive).';
+    END IF;
+
+    -- Insert the data into the BaseStats table
+    INSERT INTO Pokedex.BaseStats (id, hp, attack, defense, specialAttack, specialDefense, speed)
+    VALUES (pId, pHp, pAttack, pDefense, pSpecialAttack, pSpecialDefense, pSpeed);
+END;
+$$ LANGUAGE plpgsql;
