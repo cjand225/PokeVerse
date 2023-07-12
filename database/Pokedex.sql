@@ -63,7 +63,7 @@ CREATE TABLE Pokedex.GenderRatio (
 );
 
 -- Create the insertion pokemon function
-CREATE OR REPLACE FUNCTION insertBaseData(
+CREATE OR REPLACE FUNCTION insertBaseEntry(
     pId INT,
     pType text[],
     pHeight INT,
@@ -90,7 +90,7 @@ BEGIN
         RAISE EXCEPTION 'The weight cannot be less than zero.';
     END IF;
 
-    IF pGeneration < 1 OR pGeneration > 8 THEN
+    IF pGeneration < 1 OR pGeneration > 10 THEN
         RAISE EXCEPTION 'The generation must be between one and eight.';
     END IF;
 
@@ -104,7 +104,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create the insertion name function
-CREATE OR REPLACE FUNCTION insertNameData(
+CREATE OR REPLACE FUNCTION insertName(
     pId INT,
     pLang VARCHAR(2),
     pName TEXT
