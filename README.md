@@ -12,6 +12,20 @@ To set up PokéVerse locally, follow these steps:
 
 1. Clone the repository: `git clone https://github.com/cjand225/pokeverse.git`
 
+## Unit Testing
+
+PokéVerse uses the pgTAP framework for unit testing its PostgreSQL database. pgTAP is a collection of functions and command-line tools that facilitate writing and executing tests against the database.
+
+To run the unit tests, ensure that pgTAP is installed and available in your PostgreSQL environment. You can install pgTAP using the package manager specific to your operating system or by manually downloading the source code.
+
+Once pgTAP is installed, navigate to the project directory and run the following command to execute the tests:
+
+`pg_prove -d your_database_name -U your_username -h your_host -p your_port tests/*.sql`
+
+Replace your_database_name, your_username, your_host, and your_port with the appropriate values for your PostgreSQL configuration.
+
+The test files are located in the tests directory and have the .sql extension. Review the test results to ensure that all tests pass successfully.
+
 ## Contribution
 Contributions to PokéVerse are welcome! If you'd like to contribute, please follow these guidelines:
 - Fork the repository and create a new branch for your feature or bug fix.
@@ -20,5 +34,5 @@ Contributions to PokéVerse are welcome! If you'd like to contribute, please fol
 ## License
 PokéVerse is released under the [MIT License](https://opensource.org/licenses/MIT). You are free to use, modify, and distribute this project in accordance with the terms of the license.
 
-# Disclaimer
+## Disclaimer
 Pokémon is a registered trademark of The Pokémon Company. All Pokémon-related names, characters, and imagery are the property of The Pokémon Company. The use of Pokémon-related content in this application/service is solely for informational and non-commercial purposes. This application/service is not endorsed, sponsored, or affiliated with The Pokémon Company. The Pokémon Company holds all rights to the Pokémon franchise, including but not limited to copyright and trademark rights.
