@@ -20,8 +20,5 @@ Contributions to PokéVerse are welcome! If you'd like to contribute, please fol
 ## License
 PokéVerse is released under the [MIT License](https://opensource.org/licenses/MIT). You are free to use, modify, and distribute this project in accordance with the terms of the license.
 
-## Acknowledgments
-We would like to express our gratitude to the Pokémon Company for their iconic franchise and the Pokémon community for their support and enthusiasm.
-
 # Disclaimer
 Pokémon is a registered trademark of The Pokémon Company. All Pokémon-related names, characters, and imagery are the property of The Pokémon Company. The use of Pokémon-related content in this application/service is solely for informational and non-commercial purposes. This application/service is not endorsed, sponsored, or affiliated with The Pokémon Company. The Pokémon Company holds all rights to the Pokémon franchise, including but not limited to copyright and trademark rights.
