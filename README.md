@@ -10,7 +10,12 @@ PokéVerse is a comprehensive and multilingual Pokémon database that provides u
 ## Installation
 To set up PokéVerse locally, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/cjand225/pokeverse.git`
+1. Ensure that PostgreSQL14 or greater is installed on your system.
+2. Clone the repository: `git clone https://github.com/cjand225/pokeverse.git`
+3. Run `make create_db` to create and populate the database.
+4. Once the database is set up from the makefile, you can proceed with running PokéVerse locally.
+
+Note: Ensure that you have the necessary permissions to create and drop databases in your PostgreSQL environment.
 
 ## Unit Testing
 
