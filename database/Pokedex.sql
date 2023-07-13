@@ -210,7 +210,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Retrieves the translated name of a Pokémon based on the provided Pokémon ID and language code.
-CREATE OR REPLACE FUNCTION Pokedex.getTranslatedName(
+CREATE OR REPLACE FUNCTION Pokedex.getName(
     pId INT, 
     pLang VARCHAR(2)
 ) RETURNS TEXT AS $$
@@ -226,7 +226,7 @@ END;
 $$ LANGUAGE plpgsql;
  
 -- Retrieves the translated types of a Pokémon based on the provided Pokémon ID and language code.
-CREATE OR REPLACE FUNCTION Pokedex.getTranslatedTypes(
+CREATE OR REPLACE FUNCTION Pokedex.getTypes(
     pId INT, 
     pLang VARCHAR(2)
 ) RETURNS TEXT[]
