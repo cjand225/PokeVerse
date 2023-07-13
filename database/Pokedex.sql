@@ -63,7 +63,7 @@ CREATE TABLE Pokedex.BaseStats (
 );
 
 -- Create the insertType function
-CREATE OR REPLACE FUNCTION insertType(
+CREATE OR REPLACE FUNCTION Pokedex.insertType(
   pId INT,
   pLang VARCHAR(2),
   pDescription TEXT
@@ -82,7 +82,7 @@ $$ LANGUAGE plpgsql;
 
 
 -- Create the insertion pokemon function
-CREATE OR REPLACE FUNCTION insertBaseEntry(
+CREATE OR REPLACE FUNCTION Pokedex.insertBaseEntry(
     pId INT,
     pType text[],
     pHeight INT,
@@ -123,7 +123,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create the insertion name function
-CREATE OR REPLACE FUNCTION insertName(
+CREATE OR REPLACE FUNCTION Pokedex.insertName(
     pId INT,
     pLang VARCHAR(2),
     pName TEXT
@@ -146,7 +146,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create the insertion base stats function
-CREATE OR REPLACE FUNCTION insertBaseStats(
+CREATE OR REPLACE FUNCTION Pokedex.insertBaseStats(
     pId INT,
     pHp INT,
     pAttack INT,
@@ -210,7 +210,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Retrieves the translated name of a Pokémon based on the provided Pokémon ID and language code.
-CREATE OR REPLACE FUNCTION getTranslatedName(
+CREATE OR REPLACE FUNCTION Pokedex.getTranslatedName(
     pId INT, 
     pLang VARCHAR(2)
 ) RETURNS TEXT AS $$
@@ -226,7 +226,7 @@ END;
 $$ LANGUAGE plpgsql;
  
 -- Retrieves the translated types of a Pokémon based on the provided Pokémon ID and language code.
-CREATE OR REPLACE FUNCTION getTranslatedTypes(
+CREATE OR REPLACE FUNCTION Pokedex.getTranslatedTypes(
     pId INT, 
     pLang VARCHAR(2)
 ) RETURNS TEXT[]
