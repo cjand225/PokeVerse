@@ -55,49 +55,49 @@ SELECT col_is_fk( 'pokedex', 'basestats', 'id', 'col ID exists as foriegn key in
 -- Test for the existence of the Pokedex.PokeType enum.
 SELECT enums_are('pokedex', ARRAY[ 'poketype' ]);
 
--- Test for the existance of Pokedex.insertType function.
+-- Tests Pokedex.insertType function.
 SELECT has_function(
     'pokedex', 
     'inserttype',
     ARRAY['int', 'varchar', 'text']
 );
 
--- Test for the existance of Pokedex.insertBaseEntry function.
+-- Tests for Pokedex.insertBaseEntry function.
 SELECT has_function(
     'pokedex', 
     'insertbaseentry',
     ARRAY['int', 'text[]', 'int', 'int', 'int']
 );
 
--- Test for the existance of Pokedex.insertName function.
+-- Tests for Pokedex.insertName function.
 SELECT has_function(
     'pokedex', 
     'insertname',
     ARRAY['int', 'varchar', 'text']
 );
 
--- Test for the existance of Pokedex.insertBaseStats function.
+-- Tests for Pokedex.insertBaseStats function.
 SELECT has_function(
     'pokedex', 
     'insertbasestats',
     ARRAY['int', 'int', 'int', 'int', 'int', 'int', 'int']
 );
 
--- Test for the existance of Pokedex.getPokeTypeIndex function.
+-- Tests for Pokedex.getPokeTypeIndex function.
 SELECT has_function(
     'pokedex', 
     'getpoketypeindex',
     ARRAY['poketype']
 );
 
--- Test for the existance of Pokedex.getName function.
+-- Tests for Pokedex.getName function.
 SELECT has_function(
     'pokedex', 
     'getname',
     ARRAY['int', 'varchar']
 );
 
--- Test for the existance of Pokedex.getTypes function.
+-- Tests for Pokedex.getTypes function.
 SELECT has_function(
     'pokedex', 
     'gettypes',
