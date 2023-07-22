@@ -1,5 +1,5 @@
 -- Create Extension before runnning tests.
-SET search_path = Pokedex, public;
+SET search_path = General, Pokedex, public;
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
 BEGIN;
@@ -55,28 +55,28 @@ SELECT col_is_fk( 'pokedex', 'basestats', 'id', 'col ID exists as foriegn key in
 -- Test for the existence of the Pokedex.PokeType enum.
 SELECT enums_are('pokedex', ARRAY[ 'poketype' ]);
 
--- Tests Pokedex.insertType function.
+-- Tests Pokedex.insertType procedure.
 SELECT has_function(
     'pokedex', 
     'inserttype',
     ARRAY['int', 'varchar', 'text']
 );
 
--- Tests for Pokedex.insertBaseEntry function.
+-- Tests for Pokedex.insertBaseEntry procedure.
 SELECT has_function(
     'pokedex', 
     'insertbaseentry',
     ARRAY['int', 'text[]', 'int', 'int', 'int']
 );
 
--- Tests for Pokedex.insertName function.
+-- Tests for Pokedex.insertName procedure.
 SELECT has_function(
     'pokedex', 
     'insertname',
     ARRAY['int', 'varchar', 'text']
 );
 
--- Tests for Pokedex.insertBaseStats function.
+-- Tests for Pokedex.insertBaseStats procedure.
 SELECT has_function(
     'pokedex', 
     'insertbasestats',

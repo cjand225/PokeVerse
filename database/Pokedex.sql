@@ -62,33 +62,39 @@ CREATE TABLE Pokedex.BaseStats (
     FOREIGN KEY (id) REFERENCES Pokedex.Pokemon (id)
 );
 
--- Create the insertType function
-CREATE OR REPLACE FUNCTION Pokedex.insertType(
+-- Create the insertType procedure
+CREATE OR REPLACE PROCEDURE Pokedex.insertType(
   pId INT,
   pLang VARCHAR(2),
   pDescription TEXT
-) RETURNS VOID AS $$
+) 
+LANGUAGE plpgsql 
+AS $$
 BEGIN
-  -- Check if the record already exists in the table
-  IF EXISTS (SELECT 1 FROM Pokedex.Types WHERE id = pId AND lang = pLang) THEN
-    RAISE EXCEPTION 'Type with ID % and Lang % already exists.', pokeType, pLang;
-  END IF;
+    -- Check if the record already exists in the table
+    IF EXISTS (SELECT 1 FROM Pokedex.Types WHERE id = pId AND lang = pLang) THEN
+        RAISE EXCEPTION 'Type with ID % and Lang % already exists.', pokeType, pLang;
+    END IF;
 
-  -- Insert the new type into the table
-  INSERT INTO Pokedex.Types (id, lang, description)
-  VALUES (pId, pLang, pDescription);
+    -- Insert the new type into the table
+    INSERT INTO Pokedex.Types (id, lang, description)
+    VALUES (pId, pLang, pDescription);
+
+    COMMIT;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 
 -- Create the insertion pokemon function
-CREATE OR REPLACE FUNCTION Pokedex.insertBaseEntry(
+CREATE OR REPLACE PROCEDURE Pokedex.insertBaseEntry(
     pId INT,
     pType text[],
     pHeight INT,
     pWeight INT,
     pGeneration INT
-) RETURNS VOID AS $$
+)
+LANGUAGE plpgsql 
+AS $$
 DECLARE
      pPokeType Pokedex.PokeType[];
 BEGIN
@@ -119,15 +125,19 @@ BEGIN
     -- Insert into the Pokemon table
     INSERT INTO Pokedex.Pokemon (id, type, height, weight, generation)
     VALUES (pId, pPokeType, pHeight, pWeight, pGeneration);
+
+    COMMIT;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Create the insertion name function
-CREATE OR REPLACE FUNCTION Pokedex.insertName(
+CREATE OR REPLACE PROCEDURE Pokedex.insertName(
     pId INT,
     pLang VARCHAR(2),
     pName TEXT
-) RETURNS VOID AS $$
+) 
+LANGUAGE plpgsql 
+AS $$
 BEGIN
     -- Check for NULL values
     IF pName IS NULL THEN
@@ -142,11 +152,13 @@ BEGIN
     -- Insert into the Names table
     INSERT INTO Pokedex.Names (id, lang, name)
     VALUES (pId, pLang, pName);
+
+    COMMIT;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Create the insertion base stats function
-CREATE OR REPLACE FUNCTION Pokedex.insertBaseStats(
+CREATE OR REPLACE PROCEDURE Pokedex.insertBaseStats(
     pId INT,
     pHp INT,
     pAttack INT,
@@ -154,7 +166,9 @@ CREATE OR REPLACE FUNCTION Pokedex.insertBaseStats(
     pSpecialAttack INT,
     pSpecialDefense INT,
     pSpeed INT
-) RETURNS VOID AS $$
+)
+LANGUAGE plpgsql 
+AS $$
 BEGIN
     -- Perform validation checks
     IF pId IS NULL THEN
@@ -192,28 +206,36 @@ BEGIN
     -- Insert the data into the BaseStats table
     INSERT INTO Pokedex.BaseStats (id, hp, attack, defense, specialAttack, specialDefense, speed)
     VALUES (pId, pHp, pAttack, pDefense, pSpecialAttack, pSpecialDefense, pSpeed);
+
+    COMMIT;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Retrieves the index of the PokeType Enum provided.
 CREATE OR REPLACE FUNCTION Pokedex.getPokeTypeIndex(
     pokeTypeValue Pokedex.pokeType
-) RETURNS INTEGER AS $$
+) 
+RETURNS INTEGER 
+LANGUAGE plpgsql
+AS $$
 DECLARE
   position INTEGER;
 BEGIN
-  position := (
-    SELECT array_position(enum_range(null::Pokedex.pokeType), pokeTypeValue)
-  );
-  RETURN position;
+    position := (
+        SELECT array_position(enum_range(null::Pokedex.pokeType), pokeTypeValue)
+    );
+    RETURN position;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Retrieves the translated name of a Pokémon based on the provided Pokémon ID and language code.
 CREATE OR REPLACE FUNCTION Pokedex.getName(
     pId INT, 
     pLang VARCHAR(2)
-) RETURNS TEXT AS $$
+) 
+RETURNS TEXT 
+LANGUAGE plpgsql
+AS $$
 DECLARE
   translatedName TEXT;
 BEGIN
@@ -223,13 +245,15 @@ BEGIN
     LIMIT 1;
     RETURN translatedName;
 END;
-$$ LANGUAGE plpgsql;
+$$;
  
 -- Retrieves the translated types of a Pokémon based on the provided Pokémon ID and language code.
 CREATE OR REPLACE FUNCTION Pokedex.getTypes(
     pId INT, 
     pLang VARCHAR(2)
-) RETURNS TEXT[]
+) 
+RETURNS TEXT[]
+LANGUAGE plpgsql
 AS $$
 DECLARE
     typeArray Pokedex.PokeType[];
@@ -256,4 +280,4 @@ BEGIN
     -- Return the array of translated type descriptions
     RETURN descriptionArray;
 END;
-$$ LANGUAGE plpgsql;
+$$;
