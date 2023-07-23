@@ -79,8 +79,6 @@ BEGIN
     -- Insert the new type into the table
     INSERT INTO Pokedex.Types (id, lang, description)
     VALUES (pId, pLang, pDescription);
-
-    COMMIT;
 END;
 $$;
 
@@ -125,8 +123,6 @@ BEGIN
     -- Insert into the Pokemon table
     INSERT INTO Pokedex.Pokemon (id, type, height, weight, generation)
     VALUES (pId, pPokeType, pHeight, pWeight, pGeneration);
-
-    COMMIT;
 END;
 $$;
 
@@ -152,8 +148,6 @@ BEGIN
     -- Insert into the Names table
     INSERT INTO Pokedex.Names (id, lang, name)
     VALUES (pId, pLang, pName);
-
-    COMMIT;
 END;
 $$;
 
@@ -206,8 +200,6 @@ BEGIN
     -- Insert the data into the BaseStats table
     INSERT INTO Pokedex.BaseStats (id, hp, attack, defense, specialAttack, specialDefense, speed)
     VALUES (pId, pHp, pAttack, pDefense, pSpecialAttack, pSpecialDefense, pSpeed);
-
-    COMMIT;
 END;
 $$;
 
