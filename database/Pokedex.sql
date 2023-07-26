@@ -1,4 +1,4 @@
--- File: Pokemon.sql
+-- File: Pokedex.sql
 
 CREATE SCHEMA Pokedex;
 
@@ -101,20 +101,36 @@ BEGIN
         RAISE EXCEPTION 'The ID cannot be null.';
     END IF;
 
-    IF pId IS NOT NULL AND pId < 0 THEN
+    IF pType IS NULL THEN
+        RAISE EXCEPTION 'The type cannot be null.';
+    END IF;
+
+    IF pHeight IS NULL THEN
+        RAISE EXCEPTION 'The height cannot be null.';
+    END IF;
+
+    IF pWeight IS NULL THEN
+        RAISE EXCEPTION 'The weight cannot be null.';
+    END IF;
+
+    IF pGeneration IS NULL THEN
+        RAISE EXCEPTION 'The generation cannot be null.';
+    END IF;
+
+    IF pId < 0 THEN
         RAISE EXCEPTION 'The ID cannot be less than zero.';
     END IF;
 
-    IF pHeight IS NOT NULL AND pHeight < 0 THEN
+    IF pHeight < 0 THEN
         RAISE EXCEPTION 'The height cannot be less than zero.';
     END IF;
 
-    IF pWeight IS NOT NULL AND pWeight < 0 THEN
+    IF pWeight < 0 THEN
         RAISE EXCEPTION 'The weight cannot be less than zero.';
     END IF;
 
-    IF pGeneration < 1 OR pGeneration > 10 THEN
-        RAISE EXCEPTION 'The generation must be between one and eight.';
+    IF pGeneration < 1 THEN
+        RAISE EXCEPTION 'The generation must be greater than 1.';
     END IF;
 
     -- Convert text[] to Pokedex.PokeType[]
@@ -271,5 +287,79 @@ BEGIN
 
     -- Return the array of translated type descriptions
     RETURN descriptionArray;
+END;
+$$;
+
+-- Retrieves the translated JSON object of a Pokémon based on the provided Pokémon ID and language code.
+CREATE OR REPLACE FUNCTION Pokedex.getPokemon(
+    pId INT, 
+    pLang VARCHAR(2)
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    pokemonJson JSONB;
+BEGIN
+    -- Perform validation checks
+    IF NOT EXISTS (SELECT 1 FROM Pokedex.Pokemon WHERE id = pId) THEN
+        RAISE EXCEPTION 'The ID does not exist in the Pokemon table.';
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM Pokedex.Names WHERE lang = pLang) THEN
+        RAISE EXCEPTION 'The name does not exist for pokemon with id: % and lang: % .', pId, pLang;
+    END IF;
+
+    -- Subqueries to retrieve Pokémon information using CTEs
+    WITH pokemonQuery AS (
+        SELECT id, type, height, weight, generation
+        FROM Pokedex.Pokemon
+        WHERE Pokemon.id = pId
+    ),
+    statsQuery AS (
+        SELECT hp, attack, defense, specialAttack, specialDefense, speed
+        FROM Pokedex.BaseStats
+        WHERE BaseStats.id = pId
+    )
+
+    -- Construct the final JSON object containing Pokémon information
+    SELECT  JSON_BUILD_OBJECT(
+        Translation.getKeyTranslation('id', pLang), (
+            SELECT id FROM pokemonQuery
+        ),
+        Translation.getKeyTranslation('name', pLang), TO_JSON(
+            Pokedex.getName(pId, pLang)
+        ),
+        Translation.getKeyTranslation('type', pLang), TO_JSON(
+            Pokedex.getTypes(pId, pLang)
+        ),
+        Translation.getKeyTranslation('generation', pLang), (
+            SELECT generation FROM pokemonQuery
+        ),
+        Translation.getKeyTranslation('base stats', pLang), JSON_BUILD_OBJECT(
+            Translation.getKeyTranslation('hp', pLang), (
+                SELECT hp FROM statsQuery
+            ),
+            Translation.getKeyTranslation('attack', pLang), (
+                SELECT attack FROM statsQuery
+            ),
+            Translation.getKeyTranslation('defense', pLang), (
+                SELECT defense FROM statsQuery
+            ),
+            Translation.getKeyTranslation('special attack', pLang), (
+                SELECT specialAttack FROM statsQuery
+            ),
+            Translation.getKeyTranslation('special defense', pLang), (
+                SELECT specialDefense FROM statsQuery
+            ),
+            Translation.getKeyTranslation('speed', pLang), (
+                SELECT speed FROM statsQuery
+            )
+        )
+    )
+    INTO pokemonJson;
+
+    -- Return the final JSON object containing Pokémon information
+    RETURN pokemonJson;
 END;
 $$;
