@@ -8,11 +8,11 @@ PokéVerse is a comprehensive and multilingual Pokémon database that provides u
 - **Multilingual Support**: The database supports multiple languages, allowing users to access Pokémon information in their preferred language. 
 
 Supported Languages: 
-    - English 
-    - Japanese 
-    - French 
-    - German 
-    - Spanish
+ - English 
+ - Japanese 
+ - French 
+ - German 
+ - Spanish
 
 ## Installation
 To set up PokéVerse locally, follow these steps:
