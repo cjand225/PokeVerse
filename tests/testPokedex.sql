@@ -8,7 +8,7 @@ BEGIN;
 SELECT plan(74);
 
 -- Test for the existence of the Pokedex Schema.
-SELECT schemas_are(ARRAY[ 'public', 'pokedex', 'translation' ]);
+SELECT schemas_are(ARRAY[ 'public', 'pokedex' ]);
 
 -- Test for the existence of the Pokedex Schema tables.
 SELECT tables_are(
@@ -117,8 +117,6 @@ SELECT has_function(
 );
 
 -- Setup
-CALL Translation.insertSupportedLanguage('en');
-CALL Translation.insertSupportedLanguage('ja');
 CALL Pokedex.insertName(1, 'en', 'Bulbasaur');
 CALL Pokedex.insertName(1, 'ja', 'フシギダネ');
 

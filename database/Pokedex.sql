@@ -324,35 +324,35 @@ BEGIN
 
     -- Construct the final JSON object containing Pokémon information
     SELECT  JSON_BUILD_OBJECT(
-        Translation.getKeyTranslation('id', pLang), (
+        'ID', (
             SELECT id FROM pokemonQuery
         ),
-        Translation.getKeyTranslation('name', pLang), TO_JSON(
+        'Name', TO_JSON(
             Pokedex.getName(pId, pLang)
         ),
-        Translation.getKeyTranslation('type', pLang), TO_JSON(
+        'Type', TO_JSON(
             Pokedex.getTypes(pId, pLang)
         ),
-        Translation.getKeyTranslation('generation', pLang), (
+        'Generation', (
             SELECT generation FROM pokemonQuery
         ),
-        Translation.getKeyTranslation('base stats', pLang), JSON_BUILD_OBJECT(
-            Translation.getKeyTranslation('hp', pLang), (
+        'Base Stats', JSON_BUILD_OBJECT(
+            'HP', (
                 SELECT hp FROM statsQuery
             ),
-            Translation.getKeyTranslation('attack', pLang), (
+            'Attack', (
                 SELECT attack FROM statsQuery
             ),
-            Translation.getKeyTranslation('defense', pLang), (
+            'Defense', (
                 SELECT defense FROM statsQuery
             ),
-            Translation.getKeyTranslation('special attack', pLang), (
+            'Special Attack', (
                 SELECT specialAttack FROM statsQuery
             ),
-            Translation.getKeyTranslation('special defense', pLang), (
+            'Special Defense', (
                 SELECT specialDefense FROM statsQuery
             ),
-            Translation.getKeyTranslation('speed', pLang), (
+            'Speed', (
                 SELECT speed FROM statsQuery
             )
         )
