@@ -3,7 +3,7 @@ SET search_path = translation, pokedex, public;
 BEGIN;
 
 -- Set the amount of tests to run.
-SELECT plan(74);
+SELECT plan(76);
 
 -- Test for the existence of the Pokedex Schema.
 SELECT schemas_are(ARRAY[ 'public', 'pokedex' ]);
@@ -52,6 +52,10 @@ SELECT col_is_fk( 'pokedex', 'basestats', 'id', 'col ID exists as foriegn key in
 
 -- Test for the existence of the Pokedex.PokeType enum.
 SELECT enums_are('pokedex', ARRAY[ 'poketype' ]);
+
+-- Test for the existence of Indexes.
+SELECT indexes_are('pokedex', 'names', ARRAY[ 'names_pkey', 'nameindexpokedex' ]);
+SELECT indexes_are('pokedex', 'types', ARRAY[ 'types_pkey', 'typeindexpokedex' ]);
 
 -- Tests Pokedex.insertType procedure.
 SELECT has_function(

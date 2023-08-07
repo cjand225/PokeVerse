@@ -62,6 +62,10 @@ CREATE TABLE Pokedex.BaseStats (
     FOREIGN KEY (id) REFERENCES Pokedex.Pokemon (id)
 );
 
+-- Create Indexes for faster lookups
+CREATE INDEX NameIndexPokedex ON Pokedex.Names (id, lang);
+CREATE INDEX TypeIndexPokedex ON Pokedex.Types (id, lang);
+
 -- Create the insertType procedure
 CREATE OR REPLACE PROCEDURE Pokedex.insertType(
   pId INT,
