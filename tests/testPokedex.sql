@@ -1,6 +1,4 @@
--- Create Extension before runnning tests.
 SET search_path = translation, pokedex, public;
-CREATE EXTENSION IF NOT EXISTS pgtap;
 
 BEGIN;
 

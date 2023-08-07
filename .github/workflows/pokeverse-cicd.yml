@@ -1,0 +1,59 @@
+name: Pokeverse CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  pgtap:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: install pg_prove
+        run: sudo cpan TAP::Parser::SourceHandler::pgTAP
+        env:
+          SHELL: /bin/bash
+
+      - name: install postgres dev
+        run: sudo apt-get install -y --no-install-recommends postgresql-server-dev-14
+
+      - name: Checkout pgtap
+        uses: actions/checkout@v3
+        with:
+          repository: theory/pgtap
+          path: pgtap
+          ref: v1.2.0
+
+      - name: install pgtap
+        working-directory: pgtap
+        run: make && psql --host ${{ secrets.DB_HOST }} --username ${{ secrets.DB_USER }} --dbname ${{ secrets.DB_NAME }} --file sql/pgtap.sql
+        env:
+          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
+
+      - name: load sql
+        run: >-
+          psql --host ${{ secrets.DB_HOST }} --username ${{ secrets.DB_USER }} --dbname ${{ secrets.DB_NAME }} \
+               --file ./database/Pokedex.sql
+        env:
+          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
+
+      - name: run tests
+        run: pg_prove --host ${{ secrets.DB_HOST }} --username ${{ secrets.DB_USER }} --dbname ${{ secrets.DB_NAME }} ./tests/*.sql
+        env:
+          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
